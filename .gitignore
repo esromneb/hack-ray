@@ -1,0 +1,95 @@
+# Project
+
+/out
+/root_fs
+
+/test_orbit
+/test_orbit2
+/test_vec
+/test_refl
+/test_parse
+/test_parse2
+/test_png
+/test_ang
+
+
+
+/img/test/*.png
+
+
+
+/dist
+
+
+
+
+
+
+
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+core
+
+
+
+# Created by https://www.gitignore.io/api/osx
+# Edit at https://www.gitignore.io/?templates=osx
+
+### OSX ###
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must end with two \r
+Icon
+
+# Thumbnails
+._*
+
+# Files that might appear in the root of a volume
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# End of https://www.gitignore.io/api/osx
