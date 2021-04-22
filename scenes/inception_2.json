@@ -1,0 +1,87 @@
+{
+  "camera": {
+    "loc": [2, 0, 1],
+    "dir": [-1, 0, -0.8],
+    "rot": [0, 0, 1],
+    "depth": 20
+  },
+  "global": {
+    "color": [0.2, 0.2, 0.2],
+    "c": 10,
+    "scale":166.6666666,
+    "refract_shadows":true
+  },
+  "spheres": [{
+      "rad": 1,
+      "loc": [-1, 0, 0],
+      "ambient": 0.0,
+      "specular": 1.46,
+      "reflected": 1.0,
+      "transmitted": 0.0,
+      "diffuse": [0.4, 0.0, 0.0],
+      "n": 32
+    },
+
+{
+      "rad": 1.36,
+      "loc": [3, 0, 0],
+      "ambient": 0.0,
+      "specular": 1.46,
+      "reflected": 1.0,
+      "transmitted": 1.0,
+      "diffuse": [0.0, 0.0, 0.0],
+      "n": 32,
+"refraction":0.7
+    },
+
+{
+      "rad": 3.36,
+      "loc": [6, 0, 0],
+      "ambient": 0.0,
+      "specular": 1.46,
+      "reflected": 1.0,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.0, 0.0],
+      "n": 32
+    },
+
+{
+      "rad": 2.0,
+      "loc": [0.759, 2.49, 0],
+      "ambient": 0.1,
+      "specular": 1.46,
+      "reflected": 1.0,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.8, 0.0],
+      "n": 32
+    },
+{
+      "rad": 2.0,
+      "loc": [0.759, -2.49, 0],
+      "ambient": 0.1,
+      "specular": 1.46,
+      "reflected": 1.0,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.0, 0.9],
+      "n": 32
+    },
+
+
+
+    {
+      "rad": 100,
+      "loc": [0, 0, -101],
+      "ambient": 0.10,
+      "specular": 0,
+      "reflected": 1,
+      "transmitted": 0.0,
+      "diffuse": [0.2, 0.2, 0.0],
+      "n": 1
+    }
+  ],
+  "lights": [{
+    "dir": [-0.4, 0, -1],
+    "color": [20, 20, 20]
+  }
+]
+}

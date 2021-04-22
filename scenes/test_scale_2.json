@@ -1,0 +1,30 @@
+{
+  "camera": {
+    "loc": [5, 0, 0],
+    "dir": [-1, 0, 0],
+    "rot": [0, 0, 1],
+    "depth": 6
+  },
+  "global": {
+    "color": [0.13071, 0.13071, 0.13071],
+    "c": 10,
+"scale":255
+  },
+  "spheres": [{
+      "rad": 1,
+      "loc": [-1, 0, 0],
+      "ambient": 0.1,
+      "specular": 0.95424,
+      "reflected": 0,
+      "transmitted": 0.0,
+      "diffuse": [0.588235, 0.0, 0.0],
+      "n": 32
+    }
+  ],
+  "lights": [{
+    "dir": [-0.4, 0, -1],
+    "color": [20, 20, 20]
+  }
+],
+  "comment":"compare this against test_scale_1.json"
+}

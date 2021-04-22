@@ -1,0 +1,50 @@
+{
+  "camera": {
+    "loc": [5, 0, 0],
+    "dir": [-1, 0, 0],
+    "rot": [0, 0, 1],
+    "depth": 3
+  },
+  "global": {
+    "color": [1, 1, 1],
+    "c": 10,
+    "scale":166.6666666,
+    "refract_shadows":false
+  },
+  "spheres": [{
+      "rad": 0.5,
+      "loc": [0, -0.55, 0],
+      "ambient": 0,
+      "specular": 1.46,
+      "reflected": 0.0,
+      "transmitted": 0.0,
+      "diffuse": [1.9, 0.4, 0.4],
+      "n": 32
+    },
+    {
+      "rad": 0.5,
+      "loc": [0, 0.55, 0],
+      "ambient": 0.0,
+      "specular": 1.46,
+      "reflected": 1.0,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.0, 0.0],
+      "n": 32
+    },
+
+    {
+      "rad": 80,
+      "loc": [-16, 0, -79],
+      "ambient": 0.0,
+      "specular": 0,
+      "reflected": 0.7,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.0, 0.0],
+      "n": 1
+    }
+  ],
+  "lights": [{
+    "dir": [-0.4, 0, -1],
+    "color": [10, 10, 10]
+  }]
+}

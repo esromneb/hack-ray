@@ -1,0 +1,28 @@
+{
+  "camera": {
+    "loc": [5, 0, 0],
+    "dir": [-1, 0, 0],
+    "rot": [0, 0, 1],
+    "depth": 3
+  },
+  "global": {
+    "color": [0.4, 0.4, 0.4],
+    "c": 10,
+"scale":166.6666666
+  },
+  "spheres": [{
+      "rad": 1.1,
+      "loc": [0, 0, 0],
+      "ambient": 0.2,
+      "specular": 1.4,
+      "reflected": 0.0,
+      "transmitted": 0.0,
+      "diffuse": [1.0, 1.0, 1.0],
+      "n": 64
+    }
+  ],
+  "lights": [{
+    "dir": [0, 0, -1],
+    "color": [10, 10, 10]
+  }]
+}

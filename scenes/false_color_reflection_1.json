@@ -1,0 +1,75 @@
+{
+  "comment":"This scene is setup so that 2 mirror balls reflect a red ball.  the red ball is 100% in shadow.  due to how trace depth limitations work, refract_shadows=true causes red to show in some reflections where it never should",
+  "camera": {
+    "loc": [5, 0, 0],
+    "dir": [-1, 0, 0],
+    "rot": [0, 0, 1],
+    "depth": 2
+  },
+  "global": {
+    "color": [1, 1, 1],
+    "c": 4,
+    "refract_shadows":false
+  },
+  "spheres": [
+
+{
+      "rad": 0.9,
+      "loc": [3, 0.95, 2],
+      "ambient": 0,
+      "specular": 0.9,
+      "reflected": 0.0,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.5, 0.0],
+      "n": 32
+    },
+
+{
+      "rad": 0.8,
+      "loc": [2, 0.95, -0.4],
+      "ambient": 0,
+      "specular": 0.9,
+      "reflected": 0.0,
+      "transmitted": 0.0,
+      "diffuse": [0.5, 0.0, 0.0],
+      "n": 32
+    },
+
+    {
+      "rad": 0.5,
+      "loc": [1.2, -0.55, 0],
+      "ambient": 0.0,
+      "specular": 0.46,
+      "reflected": 1.0,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.0, 0.0],
+      "n": 32
+    },
+
+    {
+      "rad": 0.4,
+      "loc": [1.2, 0.35, 0],
+      "ambient": 0.0,
+      "specular": 0.46,
+      "reflected": 1.0,
+      "transmitted": 0.0,
+      "diffuse": [0.0, 0.0, 0.0],
+      "n": 32
+    },
+
+    {
+      "rad": 80,
+      "loc": [-16, 0, -79],
+      "ambient": 0.0,
+      "specular": 0,
+      "reflected": 0.7,
+      "transmitted": 0.0,
+      "diffuse": [0.3, 0.3, 0.3],
+      "n": 1
+    }
+  ],
+  "lights": [{
+    "dir": [-0.4, 0, -1],
+    "color": [20, 20, 20]
+  }]
+}

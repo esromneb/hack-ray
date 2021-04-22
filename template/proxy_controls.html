@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Emscripten-Generated Code</title>
+    <style>
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: none;
+      }
+
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      div.emscripten { text-align: center; }      
+      div.emscripten_border { border: 1px solid black; }
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten { border: 0px none; background-color: black; }
+
+      #emscripten_logo {
+        display: inline-block;
+        margin: 0;
+      }
+
+      .spinner {
+        height: 30px;
+        width: 30px;
+        margin: 0;
+        margin-top: 20px;
+        margin-left: 20px;
+        display: inline-block;
+        vertical-align: top;
+
+        -webkit-animation: rotation .8s linear infinite;
+        -moz-animation: rotation .8s linear infinite;
+        -o-animation: rotation .8s linear infinite;
+        animation: rotation 0.8s linear infinite;
+
+        border-left: 5px solid rgb(235, 235, 235);
+        border-right: 5px solid rgb(235, 235, 235);
+        border-bottom: 5px solid rgb(235, 235, 235);
+        border-top: 5px solid rgb(120, 120, 120);
+        
+        border-radius: 100%;
+        background-color: rgb(189, 215, 46);
+      }
+
+      @-webkit-keyframes rotation {
+        from {-webkit-transform: rotate(0deg);}
+        to {-webkit-transform: rotate(360deg);}
+      }
+      @-moz-keyframes rotation {
+        from {-moz-transform: rotate(0deg);}
+        to {-moz-transform: rotate(360deg);}
+      }
+      @-o-keyframes rotation {
+        from {-o-transform: rotate(0deg);}
+        to {-o-transform: rotate(360deg);}
+      }
+      @keyframes rotation {
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
+      }
+
+      #status {
+        display: inline-block;
+        vertical-align: top;
+        margin-top: 30px;
+        margin-left: 20px;
+        font-weight: bold;
+        color: rgb(120, 120, 120);
+      }
+
+      #progress {
+        height: 20px;
+        width: 300px;
+      }
+
+      #controls {
+        display: inline-block;
+        float: right;
+        vertical-align: top;
+        margin-top: 30px;
+        margin-right: 20px;
+      }
+
+      #output {
+        width: 100%;
+        height: 200px;
+        margin: 0 auto;
+        margin-top: 10px;
+        border-left: 0px;
+        border-right: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        display: block;
+        background-color: black;
+        color: white;
+        font-family: 'Lucida Console', Monaco, monospace;
+        outline: none;
+      }
+    </style>
+
+  <script src="jquery-3.4.1.min.js"></script>
+  <script src="LoadSave.js"></script>
+  <script type="text/javascript" src="LZWEncoder.js"></script>
+  <script type="text/javascript" src="NeuQuant.js"></script>
+  <script type="text/javascript" src="GIFEncoder.js"></script>
+  <script type="text/javascript" src="b64.js"></script>
+  <script type="text/javascript" src="doubleRayControls.js"></script>
+
+  <script type="text/javascript">
+    var encoder;
+    var context;
+    function onLoadSetupGif() {
+
+      var cv = document.getElementById('canvas');
+
+
+      context = cv.getContext('2d');
+
+      encoder = new GIFEncoder();
+
+      encoder.setRepeat(0); //0  -> loop forever
+      encoder.setDelay(100); //go to next frame every n milliseconds
+
+      encoder.start();
+
+    }
+
+    function saveGifFrame() {
+      encoder.addFrame(context);
+    }
+
+    function downloadGif() {
+      encoder.finish();
+      encoder.download("download.gif");
+    }
+
+  </script>
+
+  <script type="text/javascript">
+    var doPublicRender = false;
+    if( doPublicRender ) {
+      $(document).ready(()=>{
+        ['setupEngineButton','coutButton','coutDualButton','dumpPolyButton'].forEach(function(b){
+          $('#'+b).remove();
+        });
+      });
+    }
+  </script>
+
+
+  <script type="text/javascript">
+    
+    /// Fucking emscripten is blocking us again
+    /// we want text boxes we can edit on this page
+    /// because emscripten calls addEventListener() with a lambda, there is no way for us to remove this
+    /// so we are forced to attach a listner first, and then use stopImmediatePropagation to stop the emscripten
+    /// lisnter from firing
+
+    ['keydown', 'keyup', 'keypress', 'blur', 'visibilitychange'].forEach(function(event) {
+      document.addEventListener(event, function(event) {
+        // console.log('addeventlis2 ' + event.type);
+        event.stopImmediatePropagation();
+      });
+    });
+
+    var requestedX = 400;
+    var requestedY = 400;
+
+    ///
+    /// Emscripten also binds to all of the mouse events
+    /// In this case we don't care, we just want an additional action which is to know
+    /// Where we clicked
+    ///
+    function onLoadHookClick() {
+
+      ['mousedown'].forEach(function(event) {
+        Module.canvas.addEventListener(event, function(event) {
+          // console.log(event);
+          let loc = getEventLocation(this,event);
+
+          const browserY = loc.y;
+          const browserX = loc.x;
+
+          const canvasYPixels = requestedY; // FIXME change this
+
+          const canvasY = canvasYPixels - browserY;
+
+          // console.log(loc);
+          jsPrint("x: " + browserX + " y: " + canvasY);
+        }, true);
+      });
+    } 
+
+
+
+
+  </script>
+
+  <script type="text/javascript">
+
+    function onLoadRender() {
+      // initial parse and load needs a small delay so that the rainbow render can finish
+      // should fix issue #12
+      // 100 seems too small and doesn't fix the issue
+      // this may be able to be fixed without delays by removing rainbow
+      // or by keeping it and detecting when the rainbow render/resize has passed
+      // or by looking at canvas size or something similar
+      setTimeout(()=>{
+        setupEngineClick();
+
+        setPrintRenderTime(true);
+        setPrintRotCamera(true);
+
+        parseAndRender();
+      },200);
+    }
+
+    // there can only be one of these
+    // if we want to add more just add to the list of functions
+    window.onload = ()=>{
+      onLoadSetupGif();
+      onLoadRender();
+      onLoadHookClick();
+    };
+  </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+
+
+      function downloadPng(n) {
+        // https://stackoverflow.com/questions/27798126/how-to-open-the-newly-created-image-in-a-new-tab
+        // this lame way required for chrome
+        var tmp_canvas = document.getElementById('canvas');
+        var dt = tmp_canvas.toDataURL("image/png");
+        var w = window.open("about:blank");
+        let image = new Image();
+        image.src = dt;
+        setTimeout(function(){
+          w.document.write(image.outerHTML);
+        }, 0);
+
+        // firefox can just:
+        // window.open(dt);
+      }
+
+      var simpleRotZRunning = false;
+
+      // hacked rotate z camera button
+      function simpleRotZClick() {
+
+        if(!simpleRotZRunning) {
+          setupOrbit(30);
+          simpleRotZRunning = true;
+          nextOrbitRender(false);
+          nextOrbitRender(true);
+          return;
+        }
+        nextOrbitRender(true);
+        dumpCamera();
+
+      }
+
+
+
+      // function testSphere() {
+      //   setSphere(
+      //     0,
+      //     1.1,
+      //     [1, 0, 3],
+      //     0.1,
+      //     0.2,
+      //     0.3,
+      //     0.4,
+      //     [1, 0.8, 0],
+      //     8);
+      // }
+
+
+
+
+    </script>
+    <table>
+<td valign="top">
+<!--
+<input type="button" value="Render" onclick="renderClick()"/><br>
+<input type="button" value="RenderDebug" onclick="renderDebugClick()"/><br>
+<input type="button" value="SetScale" onclick="setScaleClick()"/>
+<input type="text" value="0.006" id="scaleText"/>
+<input type="button" value="debug2()" onclick="debug2Click()"/><br>
+<br>
+<br>
+-->
+<input type="button" id="setupEngineButton" value="Setup Engine" onclick="setupEngineClick()"/><br>
+<input type="button" id="renderOfficialButton" value="Render Official" onclick="doRenderOfficial()"/><br>
+<br>
+<br>
+<input type="button" id="nextRainbowButton" value="Next Rainbow" onclick="nextRainbowClick()"/><br>
+<input type="button" id="coutButton" value="Cout from C++" onclick="coutIntClick()"/><br>
+<input type="button" id="coutDualButton" value="Cout from C++ dual" onclick="coutIntDualClick()"/><br>
+<input type="button" id="dumpPolyButton" value="Dump Poly 0" onclick="dumpPoly(0)"/><br>
+<input type="button" id="saveGifFrameButton" value="Safe Gif Frame" onclick="saveGifFrame()"/><br>
+<input type="button" id="downloadGifButton" value="Download Gif" onclick="downloadGif()"/><br>
+<input type="button" id="rotateCameraButton" value="Rotate Camera (z)" onclick="simpleRotZClick()"/><br>
+<input type="button" id="downloadPngButton" value="Download PNG" onclick="downloadPng()"/><br>
+<a href="https://github.com/esromneb/DoubleRay">Github Page</a>
+</td><td>
+<textarea id="jsonscene" rows="13" cols="50">
+{
+  "camera": {
+    "loc": [5, 0, 0],
+    "dir": [-1, 0, 0],
+    "rot": [0, 0, 1],
+    "depth": 6
+  },
+  "global": {
+    "color": [0.2, 0.2, 0.2],
+    "c": 10,
+    "scale":166.6666666
+  },
+  "spheres": [{
+      "rad": 1,
+      "loc": [-1, 0, 0],
+      "ambient": 0.0,
+      "specular": 1.46,
+      "reflected": 1,
+      "transmitted": 1.0,
+      "diffuse": [0.0, 0.0, 0.0],
+      "n": 32,
+      "refraction":1.4
+    },
+    {
+      "rad": 1.0,
+      "loc": [-4, -1.1, 0],
+      "ambient": 0.1,
+      "specular": 1.46,
+      "reflected": 0,
+      "transmitted": 0.0,
+      "diffuse": [0.8, 0.0, 0.8],
+      "n": 32
+    },
+    {
+      "rad": 10,
+      "loc": [-4, 0, -11],
+      "ambient": 0.4,
+      "specular": 0,
+      "reflected": 1,
+      "transmitted": 0.0,
+      "diffuse": [0.4, 0.4, 0.4],
+      "n": 1
+    }
+  ],
+  "lights": [{
+    "dir": [-0.4, 0, -1],
+    "color": [20, 20, 20]
+  }
+]
+}
+
+</textarea><br>
+<select id="loadScenesSel">
+</select>
+</td><td>
+Save or Load a scene (via a cookie).  There is only 1 save slot.<br>
+<input type="button" value="Save Scene" onclick="globalSave('default')"/><br>
+<input type="button" value="Load Scene" onclick="globalLoad('default');parseAndRender();"/><br>
+</td>
+<!-- <td>
+<input type="text" id="dtext">
+</td> -->
+
+</tr></table>
+
+
+
+
+<script type="text/javascript">
+var $sel = $("#loadScenesSel");
+
+const ss = [
+'<Choose A Scene>',
+'color_balls_refraction_1.json',
+'color_balls_refraction_2.json',
+'color_balls_refraction.json',
+'cool_reflection_1.json',
+'false_color_reflection_1.json',
+'floating_spheres_1.json',
+'global_scale_1.json',
+'glowing_bomb.json',
+'hit_order_1.json',
+'orientation_1.json',
+'refraction_1.json',
+'refraction_2.json',
+'refraction_9.json',
+'refraction_shadow_1.json',
+'refraction_shadow_3.json',
+'refraction_shadow_4.json',
+'soap_bubble_1.json',
+'test_shadow_1.json',
+'test_shadow_2.json',
+'test_shadow_3.json',
+'three_color_balls.json',
+'three_color_balls_yellow.json'
+];
+
+ss.forEach(function(b){
+  $sel.append($("<option />").val('scenes/'+b).text(b));
+});
+// $sel.append($("<option />").val('scenes/three_color_balls.json').text('scenes/three_color_balls.json'));
+
+$sel.change(function(x){
+  const sval = $( this ).val();
+
+  if(sval === 'scenes/<Choose A Scene>') {
+    return;
+  }
+
+  $.ajax({
+    url: sval,
+    // url: "scenes/test_shadow_1.json",
+    // url: "scenes/refraction_7.json",
+    dataType: "text",
+    context: {}
+  }).done(function(x) {
+    // console.log(x);
+    // $('#jsonscene').val(JSON.stringify(x, null, 4));
+    $('#jsonscene').val(x);
+    parseAndRender();
+    // $( this ).addClass( "done" );
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+
+  var parseInJavascript = false;
+
+  function parseAndRender() {
+    // jsPrint('parseAndRender called ' + new Date());
+
+    simpleRotZRunning = false;
+
+    const scene = $('#jsonscene').val();
+
+    if( parseInJavascript ) {
+
+      doJsonParse(scene);
+    } else {
+      // 
+      parseJsonScene(scene, true, true, 0);
+      determineCanvas(scene);
+    }
+  }
+
+  // Parse json ourselves as well and grab canvas resolution
+  function determineCanvas(scene) {
+
+    let obj;
+    try {
+      obj = JSON.parse(scene);
+    } catch(e) {
+      // jsPrint("ERROR: illegal json");
+      // jsPrint(e.toString());
+      return;
+    }
+
+    if(obj.global) {
+      const gg = obj.global;
+
+      if( typeof(gg.x) !== 'undefined' && typeof(gg.y) !== 'undefined' ) {
+        requestedX = gg.x;
+        requestedY = gg.y;
+      } else {
+        requestedX = 400;
+        requestedY = 400;
+      }
+    }
+  }
+
+  /// will call sub functions and eventually render the scene
+  /// if there are no errors in the input
+  function doJsonParse(scene) {
+    let obj;
+    try {
+      obj = JSON.parse(scene);
+    } catch(e) {
+      jsPrint("ERROR: illegal json");
+      jsPrint(e.toString());
+      return;
+    }
+
+    doubleRayExampleDoJsonCalls(obj);
+  }
+
+
+
+  let changeTimer = null;
+
+  // how many ms after final keypress do we render scene?
+  const jsonChangeTimeout = 333;
+
+  $(document).ready(()=>{
+
+
+    ///
+    /// Any time a key is pressed run this
+    /// This will fire a timer after N ms to parse and update the
+    /// scene, however we eat any repeat keypresses that happen
+    /// faster than the timeout
+    $('#jsonscene').bind('input propertychange', ()=>{
+      // jsPrint('text changed');
+      if( changeTimer !== null ) {
+        clearTimeout(changeTimer);
+      }
+      changeTimer = setTimeout(parseAndRender, jsonChangeTimeout);
+    });
+  });
+</script>
+
+
+
+<script type="text/javascript">
+  function getElementPosition(obj) {
+    var curleft = 0, curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curleft += obj.offsetLeft;
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+        return { x: curleft, y: curtop };
+    }
+    return undefined;
+}
+
+function getEventLocation(element,event){
+    // Relies on the getElementPosition function.
+    var pos = getElementPosition(element);
+    
+    return {
+      x: (event.pageX - pos.x),
+        y: (event.pageY - pos.y)
+    };
+}
+</script>
+
+
+    <div class="spinner" id='spinner'></div>
+    <div class="emscripten" id="status">Downloading...</div>
+<!--
+<span id='controls'>
+  <span><input type="checkbox" id="resize">Resize canvas</span>
+  <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
+  <span><input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, 
+                                                                            document.getElementById('resize').checked)">
+  </span>
+</span>
+-->
+
+    <div class="emscripten">
+      <progress value="0" max="100" id="progress" hidden=1></progress>
+    </div>
+
+    
+    <div class="emscripten_border">
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+    </div>
+    <textarea id="output" rows="8"></textarea>
+
+    <script type="text/javascript" src="doubleRayInstantiate.js"></script>
+    <script type="text/javascript">
+      function myGotB64(x, tag) {
+        jsPrint(x);
+        jsPrint('');
+        jsPrint('above from tag ' + tag);
+      }
+      doubleRaySetB64Callback(myGotB64);
+    </script>
+    {{{ SCRIPT }}}
+
+  </body>
+</html>
+
+
