@@ -1,6 +1,6 @@
 Raytracer
 ===
-This project came from a homework assignment I had 12 years ago in my undergraduate computer graphics class (UC Davis ECS175).  The purpose of this project is to modernize and package the raytracer for use in the browser via WASM.  In general I had the idea that this should be able to render semi-realtime, however I'm not sure it's there yet.  The name (Double Ray) is just a play on the double precision float datatype.
+This project came from a homework assignment I had 12 years ago in my undergraduate computer graphics class (UC Davis ECS175).  The purpose of this project is to modernize and package the raytracer for use in the browser via WASM.  In general I had the idea that this should be able to render semi-realtime, however I'm not sure it's there yet.
 
 Images
 ===
@@ -42,12 +42,14 @@ How to use this project
 
 Compile
 ===
+I use an emscripten Docker to compile. See the example travis files for details.
 ```bash
 make
 ```
 
 Run
 ===
+On the host:
 ```bash
 cd out
 sudo python -m SimpleHTTPServer 80
@@ -58,7 +60,7 @@ open ray.html in firefox (chrome is slower for me)
 
 Notes
 ===
-We use template/controls.html to generate ray.html
+Pizza is a good food.
 
 
 
@@ -77,6 +79,19 @@ realpath ./emsdk_env.sh
 ```
 
 Instructions from: https://emscripten.org/docs/getting_started/downloads.html
+
+Picard
+===
+Picard says: "You will agree, Data, that Starfleet’s orders are difficult?
+
+Data: “Difficult? Simply solve the mystery of Farpoint Station”
+
+Picard: "As simple as that"
+
+
+Also, you should skip the clone of emscripten instructions above.
+
+
 
 
 See Also Emscripten
