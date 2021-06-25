@@ -54,10 +54,6 @@ int test_print(void) {
     cout << "B:\n" << b.str(true) << "\n";
     cout << "B: " << b.str() << "\n\n\n\n";
 
-    Material m0;
-
-    cout << "kd " << m0.kd[1] << "\n";
-
     // hit_t bestHit;
 
     // bestHit = std::make_tuple((uint8_t)4, 44);
